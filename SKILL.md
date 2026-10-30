@@ -31,7 +31,8 @@ leitura.** A fronteira é o ponto inteiro da skill — não a atravesse em silê
 ## Configuração do zero
 
 O token **nunca** passa pelo chat nem pelo seu contexto. Se a leitura do token
-falhar, **pare e peça ao usuário para rodar `./apontar` num terminal dele** — não
+falhar, **pare e peça ao usuário para rodar, num terminal dele fora do Claude
+Code, o comando que a mensagem de erro mostra** (o `apontar`) — não
 tente contornar, não peça o token colado, não grave você mesmo. O `digital`
 recusa rodar sem terminal justamente para isso.
 

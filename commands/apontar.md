@@ -13,9 +13,10 @@ Faça, em ordem, sem pedir confirmação entre os passos de leitura:
    "essa semana" no fuso `America/Fortaleza`. Diga qual intervalo entendeu.
 
 2. **`./clickup-time.sh sugerir --from X --to Y --json`**. Isso só lê. Pede a
-   digital uma vez. Se falhar no token, pare e peça ao usuário para rodar
-   `./apontar` num terminal dele, que configura a digital antes de abrir o Claude
-   Code — o token nunca passa por você.
+   digital uma vez. Se falhar no token, pare e peça ao usuário para rodar, num
+   terminal dele fora do Claude Code, o comando que a mensagem de erro mostra (o
+   `apontar`, que configura a digital antes de abrir o Claude Code) — o token
+   nunca passa por você.
 
 3. **Relate as fontes varridas** antes de qualquer proposta: os agentes, o
    `github` (push, PR, review) e o `clickup` (comentários do usuário). Se alguma

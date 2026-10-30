@@ -70,10 +70,15 @@ ALVOS = ("arm64-apple-macos12", "x86_64-apple-macos12")
 # O que o clickup-token grava no comentário do item (ver clickup_token.swift).
 MARCA_DIGITAL = "gravado por clickup-token"
 
+# Caminho real da skill, com `~`: quem instalou pelo README não tem `./apontar` na
+# pasta em que está, e no mind o atalho fica na raiz do repo.
+_CASA = os.path.expanduser("~")
+_PASTA_EXIBIDA = ("~" + PASTA_SKILL[len(_CASA):]
+                  if PASTA_SKILL.startswith(_CASA + os.sep) else PASTA_SKILL)
 COMO_CONFIGURAR = (
-    "Configure num terminal seu, sem passar pelo chat:\n\n"
-    "  ./apontar                    # configura na primeira vez e segue para o apontamento\n"
-    "  ./clickup-time.sh digital    # só grava (ou troca) o token\n\n"
+    "Configure num terminal seu, fora do Claude Code (o token não passa pelo chat):\n\n"
+    f"  {_PASTA_EXIBIDA}/apontar                   # configura e segue para o apontamento\n"
+    f"  {_PASTA_EXIBIDA}/clickup-time.sh digital   # só grava (ou troca) o token\n\n"
     "O token é pedido sem eco pelo clickup-token, e cada leitura pede a digital."
 )
 
