@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>apontar-horas por dentro</title>
+<!-- Gerado por docs/gerar_como_funciona.py a partir de como-funciona.modelo.html. Edite o modelo e rode de novo. -->
+<style>
+:root{ {{tokens-claro}}
+  color-scheme:light;
+  --sans:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+  --display:"Avenir Next Condensed","Arial Narrow",-apple-system,BlinkMacSystemFont,sans-serif;
+  --mono:Menlo,"SF Mono",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){ :root{ {{tokens-escuro}} color-scheme:dark; } }
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.5}
+.pagina{max-width:1240px;margin:0 auto;padding-inline:clamp(16px,4vw,40px);padding-block:48px 72px}
+code{font-family:var(--mono);font-size:.88em}
+.olho{font-family:var(--mono);font-size:12.5px;letter-spacing:.05em;color:var(--muted);margin:0 0 12px}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(2.4rem,6vw,4.2rem);line-height:1;letter-spacing:-.01em;margin:0 0 20px;text-wrap:balance}
+.lede{max-width:68ch;font-size:18px;margin:0 0 28px}
+.agenda{display:flex;flex-wrap:wrap;margin:0;padding:0;border-block:1px solid var(--rule)}
+.agenda div{padding:10px 20px 10px 0;margin-right:20px;border-right:1px solid var(--rule)}
+.agenda div:last-child{border-right:0}
+.agenda dt{font-size:12px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.agenda dd{margin:0;font-family:var(--mono);font-size:15px;font-weight:600;font-variant-numeric:tabular-nums}
+.duas{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:32px;margin-top:40px}
+h3{font-family:var(--display);font-weight:600;font-size:1.3rem;margin:0 0 12px}
+ol.passos{margin:0;padding-left:1.3em;display:grid;gap:10px;max-width:60ch}
+ol.passos li::marker{font-family:var(--mono);color:var(--muted)}
+.legenda{display:flex;flex-wrap:wrap;gap:10px 22px;margin:0;padding:0;list-style:none}
+.legenda li{display:flex;align-items:center;gap:8px;font-size:14px}
+.legenda b{font-weight:600}
+.chip{width:14px;height:14px;border-radius:2px;flex:none}
+.legenda span.nota{color:var(--muted)}
+.figuras{display:grid;gap:64px;margin-top:56px}
+figure{margin:0}
+.cabeca{display:flex;gap:16px;align-items:baseline;margin-bottom:14px;flex-wrap:wrap}
+.num{font-family:var(--mono);font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+h2{font-family:var(--display);font-weight:600;font-size:clamp(1.4rem,2.6vw,1.9rem);line-height:1.15;margin:0;text-wrap:balance}
+.diagrama{overflow-x:auto;padding-block:8px;border-top:1px solid var(--rule)}
+.diagrama svg{display:block;width:100%;height:auto;min-width:880px}
+figcaption{max-width:76ch;margin-top:14px;color:var(--muted);font-size:15px;line-height:1.6}
+figcaption code{color:var(--ink)}
+.tabela{overflow-x:auto;margin-top:28px}
+table{border-collapse:collapse;width:100%;min-width:760px;font-size:14px}
+th,td{text-align:left;vertical-align:top;padding:10px 14px 10px 0;border-bottom:1px solid var(--rule)}
+th{font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);font-weight:600}
+td:first-child{white-space:nowrap;font-family:var(--mono);font-size:13px;color:var(--scripts);font-weight:600}
+td.sim{color:var(--ink);font-weight:600}
+td.nao{color:var(--muted)}
+.rodape{margin-top:72px;padding-top:16px;border-top:1px solid var(--rule);color:var(--muted);font-size:14px;display:grid;gap:6px}
+.rodape code{color:var(--ink)}
+</style>
+</head>
+<body>
+<main class="pagina">
+  <p class="olho">skill do Claude Code · .claude/skills/apontar-horas</p>
+  <h1>apontar-horas por dentro</h1>
+  <p class="lede">A skill preenche a planilha de horas do ClickUp com o que ficou registrado no seu dia: as conversas com os agentes, o que você fez no GitHub (push, PR, review, comentário) e os seus comentários nas tasks do ClickUp. O que dá para decidir por regra fica num script determinístico; o que exige leitura fica com o LLM; quem grava é você.</p>
+  <dl class="agenda">
+    <div><dt>expediente</dt><dd>08:00–18:00</dd></div>
+    <div><dt>almoço</dt><dd>12:00–13:30</dd></div>
+    <div><dt>meta do dia</dt><dd>8h30</dd></div>
+    <div><dt>grade</dt><dd>15 min</dd></div>
+  </dl>
+
+  <div class="duas">
+    <section>
+      <h3>Para usar</h3>
+      <ol class="passos">
+        <li><code>gh auth login</code>, se ainda não fez. É opcional: sem ele a fonte GitHub fica de fora e o resto funciona.</li>
+        <li><code>./apontar ontem</code> na raiz do mind. Na primeira vez ele pede o token do ClickUp (avatar → Settings → Apps → API Token) sem mostrar o que você digita. Não precisa de Xcode: o programa da digital já vem pronto.</li>
+        <li>O agente lê o dia, propõe e abre a tela local. Você confere, ajusta início e fim, e grava.</li>
+      </ol>
+    </section>
+    <section>
+      <h3>As cores</h3>
+      <ul class="legenda">
+        <li><span class="chip" style="background:var(--voce)"></span><b>Você</b><span class="nota">decide e grava</span></li>
+        <li><span class="chip" style="background:var(--agente)"></span><b>Agente (LLM)</b><span class="nota">lê e propõe</span></li>
+        <li><span class="chip" style="background:var(--scripts)"></span><b>Scripts</b><span class="nota">regra e trava</span></li>
+        <li><span class="chip" style="background:var(--github)"></span><b>GitHub</b><span class="nota">só leitura</span></li>
+        <li><span class="chip" style="background:var(--clickup)"></span><b>ClickUp</b><span class="nota">a planilha</span></li>
+        <li><span class="chip" style="background:var(--segredo)"></span><b>Token</b><span class="nota">o segredo</span></li>
+      </ul>
+    </section>
+  </div>
+
+  <div class="figuras">
+    <figure>
+      <div class="cabeca"><span class="num">Figura 1</span><h2>Quem faz o quê, do <code>./apontar</code> até a planilha</h2></div>
+      <div class="diagrama">{{figura-1-quem-faz-o-que}}</div>
+      <figcaption>O <code>sugerir</code> lê as transcrições no disco, o feed do GitHub pelo <code>gh</code> e o ClickUp (lançamentos e comentários), e devolve os trechos que conseguiu decidir por regra. No caminho padrão, quem grava é você, pelo botão Gravar da tela: o dia é revalidado pelas mesmas regras do <code>write --confirm</code> antes do único POST. O PUT logo depois existe porque o POST sozinho deixa a coluna Hora Final como “Data inválida”, e a releitura pela API não percebe; por isso o último passo é conferir a planilha.</figcaption>
+    </figure>
+
+    <figure>
+      <div class="cabeca"><span class="num">Figura 2</span><h2>O script decide por regra, o LLM decide por leitura</h2></div>
+      <div class="diagrama">{{figura-2-script-e-llm}}</div>
+      <figcaption>Tudo o que dá para decidir por regra fica no Python: horário, âncora explícita, grade de 15 min, sobreposição, duplicata. O LLM só recebe JSON e só devolve comandos e o <code>plano.json</code>, com a origem de cada trecho declarada; o front recusa plano com trecho sem nota ou fora da grade. A escrita tem dois caminhos, e os dois passam pela mesma guarda: o botão Gravar da tela, ou <code>write --confirm</code> pelo chat, que o agente só roda depois de mostrar a prévia e ouvir o seu “pode gravar”.</figcaption>
+    </figure>
+
+    <figure>
+      <div class="cabeca"><span class="num">Figura 3</span><h2>Os arquivos e quem chama quem</h2></div>
+      <div class="diagrama">{{figura-3-arquivos}}</div>
+      <figcaption>Só o <code>clickup_time.py</code> fala com o ClickUp, e só ele recebe o token, pelo <code>clickup-token</code>. O módulo de transcrições fala com o GitHub pelo <code>gh</code>, que usa o próprio login. O front importa o núcleo e grava pelo mesmo <code>escrever()</code> do terminal.</figcaption>
+      <div class="tabela">
+        <table>
+          <thead><tr><th>Arquivo</th><th>O que faz</th><th>Rede</th><th>Token</th><th>Grava no ClickUp</th></tr></thead>
+          <tbody>
+            <tr><td>apontar</td><td>Entrada. Confere a digital sem pedir nada; se faltar, instala o <code>clickup-token</code> e pede o token. Avisa se o <code>gh</code> estiver sem login e abre o Claude Code com <code>/apontar</code>.</td><td class="nao">só <code>gh auth status</code></td><td class="nao">não</td><td class="nao">não</td></tr>
+            <tr><td>clickup-time.sh</td><td>Acha a pasta da skill mesmo quando chamado pelo atalho da raiz e passa tudo para o Python.</td><td class="nao">não</td><td class="nao">não</td><td class="nao">não</td></tr>
+            <tr><td>clickup_time.py</td><td>A CLI: <code>read</code>, <code>sugerir</code>, <code>tarefas</code>, <code>write</code>, <code>front</code>, <code>digital</code>. Agenda e grade de 15 min, faixas livres, divergências, comentários do ClickUp, guarda de escrita (<code>validar_candidatos</code>, <code>fundir_contiguos</code>) e a gravação (<code>escrever</code>, <code>selar_fim</code>).</td><td class="sim">ClickUp</td><td class="sim">lê, pelo clickup-token</td><td class="sim">só <code>write --confirm</code> e o front</td></tr>
+            <tr><td>clickup_time_transcricao.py</td><td>Lê as transcrições do Claude Code, Codex, Grok e opencode e o feed de eventos do GitHub. Extrai as âncoras, liga cada evento à âncora vigente e vota por trecho de 15 min.</td><td class="sim">GitHub, pelo <code>gh</code></td><td class="nao">não</td><td class="nao">não</td></tr>
+            <tr><td>clickup_time_front.py</td><td>Servidor em 127.0.0.1, porta efêmera, com segredo em toda requisição. Valida o plano na subida, mostra as abas Lista, Gravar e Resultados, e grava pelo mesmo caminho do <code>write --confirm</code>.</td><td class="nao">só local</td><td class="sim">recebe na subida</td><td class="sim">pelo botão Gravar</td></tr>
+            <tr><td>clickup_time_html.py</td><td>Gera a prévia e o resultado do <code>write</code> em <code>.html</code> autocontido, que abre offline.</td><td class="nao">não</td><td class="nao">não</td><td class="nao">não</td></tr>
+            <tr><td>bin/clickup-token</td><td>Grava e lê o token no Keychain; a leitura pede a digital. Vem pronto e universal (Apple Silicon e Intel). A fonte é o <code>clickup_token.swift</code>, e o <code>bin/clickup-token.json</code> guarda os hashes da fonte e do binário.</td><td class="nao">não</td><td class="sim">guarda e entrega</td><td class="nao">não</td></tr>
+            <tr><td>SKILL.md, /apontar</td><td>O procedimento que o agente segue: o que ele resolve, o que declara e o que nunca faz. O <code>/apontar</code> fica em <code>.claude/commands/apontar.md</code>.</td><td class="nao">—</td><td class="nao">—</td><td class="nao">—</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </figure>
+
+    <figure>
+      <div class="cabeca"><span class="num">Figura 4</span><h2>Como um trecho de 15 minutos ganha uma task</h2></div>
+      <div class="diagrama">{{figura-4-como-um-trecho-ganha-task}}</div>
+      <figcaption>Cada evento vota na task da âncora vigente, com peso pelo tipo, e a maior soma leva o trecho. Âncora da conversa vale até a próxima da mesma sessão e expira na virada do dia. Ação sua no GitHub ou no ClickUp vale só no instante em que aconteceu; quando perde para uma sessão, vai junto no bloco como “também”, para o agente decidir se o trecho se divide. Os comentários do ClickUp são lidos nas tasks que as outras fontes ou a planilha citam, mais as suas que mudaram no período. O feed do GitHub guarda 300 eventos, umas seis semanas; antes disso, falta de evento é falta de dado.</figcaption>
+    </figure>
+
+    <figure>
+      <div class="cabeca"><span class="num">Figura 5</span><h2>Um dia proposto, com a origem de cada minuto</h2></div>
+      <div class="diagrama">{{figura-5-um-dia-proposto}}</div>
+      <figcaption>Exemplo montado a partir de 29/09. A cor de cada trecho é a de quem o sustenta: âncora é do script, inferência é do agente, “você disse” é sua, e proximidade não tem dono. Trechos encostados da mesma task viram um lançamento só, e a cor mostra a composição: a HM-370 começa com 15 min de proximidade antes da fala das 13:46. Proximidade é o que sobrou sem evidência e herdou a task vizinha; o terminal e a tela sempre dizem quanto foi, porque só você pode confirmar essas horas. A Daily não deixa rastro em transcrição, então entra como “você disse”. O almoço não é marcado.</figcaption>
+    </figure>
+
+    <figure>
+      <div class="cabeca"><span class="num">Figura 6</span><h2>O token nunca passa pelo agente</h2></div>
+      <div class="diagrama">{{figura-6-caminho-do-token}}</div>
+      <figcaption>O token entra uma vez, digitado por você no terminal, e o <code>clickup-token</code> grava o item do Keychain confiando só no próprio hash. Depois disso, cada execução pede a digital antes de ler, e o token fica na memória do processo que chama a API, sem aparecer em saída, log ou JSON. O <code>security</code> e qualquer outro programa só leem o item com a senha do chaveiro. Ninguém compila nada: quando a skill traz um <code>clickup-token</code> novo, o <code>./apontar</code> instala e pede o token uma vez. Só quem mantém a skill gera o binário, com o Xcode (<code>digital --compilar</code>); a compilação é reproduzível, então dá para conferir o <code>bin/</code> recompilando e comparando com a ficha.</figcaption>
+    </figure>
+  </div>
+
+  <footer class="rodape">
+    <span>Procedimento completo: <code>.claude/skills/apontar-horas/SKILL.md</code></span>
+    <span>Figuras avulsas para slides, em tema claro e escuro: <code>docs/figuras/</code></span>
+    <span>Mudou a skill? Edite <code>docs/gerar_como_funciona.py</code> ou <code>docs/como-funciona.modelo.html</code> e rode <code>python3 docs/gerar_como_funciona.py</code>.</span>
+  </footer>
+</main>
+</body>
+</html>

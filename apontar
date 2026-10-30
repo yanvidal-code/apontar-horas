@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+#
+# apontar — um comando só: abre o Claude Code já no fluxo de apontamento.
+#
+#   apontar                          # semana corrente
+#   apontar ontem
+#   apontar "semana passada"
+#   apontar 2026-09-01 a 2026-09-04
+#
+# Na primeira vez (ou quando o token precisa ser trocado), configura antes a
+# digital: instala o clickup-token que vem pronto em bin/ (nada é compilado) e
+# pede o token do ClickUp sem eco.
+#
+# Roda o Claude Code em modo interativo com `/apontar` como prompt inicial: o
+# agente lê as transcrições, resolve o que der, sobe o front local em segundo
+# plano e te devolve a URL — e continua ali, no terminal, pra você seguir a
+# conversa se quiser.
+#
+# Para encerrar o front depois:  ./clickup-time.sh front --parar
+
+set -euo pipefail
+
+ORIGEM="${BASH_SOURCE[0]}"
+while [ -L "$ORIGEM" ]; do
+  DESTINO="$(readlink "$ORIGEM")"
+  case "$DESTINO" in
+    /*) ORIGEM="$DESTINO";;
+     *) ORIGEM="$(cd "$(dirname "$ORIGEM")" && pwd)/$DESTINO";;
+  esac
+done
+SKILL_DIR="$(cd "$(dirname "$ORIGEM")" && pwd)"
+# .claude/skills/apontar-horas -> raiz do repo
+REPO="$(cd "$SKILL_DIR/../../.." && pwd)"
+# O /apontar chama ./clickup-time.sh. No mind há esse atalho na raiz; instalada
+# em ~/.claude/skills, a "raiz" é a home, sem atalho: abre na pasta da skill.
+[ -e "$REPO/clickup-time.sh" ] || REPO="$SKILL_DIR"
+
+command -v claude >/dev/null 2>&1 || {
+  echo "claude não encontrado no PATH." >&2
+  exit 1
+}
+
+cd "$REPO"
+
+# Primeira vez, ou token a trocar: configura a digital aqui, antes do Claude
+# Code, porque o token é pedido sem eco e nunca pode passar pelo agente.
+if ! falta="$("$SKILL_DIR/clickup-time.sh" digital --conferir 2>&1)"; then
+  echo "digital do ClickUp: $falta. Configurando agora." >&2
+  echo "Token em: ClickUp → avatar → Settings → Apps → API Token (começa com pk_)." >&2
+  "$SKILL_DIR/clickup-time.sh" digital || exit 1
+fi
+
+# A fonte GitHub é opcional: avisa e segue.
+if ! command -v gh >/dev/null 2>&1; then
+  echo "aviso: sem o gh, a fonte GitHub fica de fora (brew install gh && gh auth login)." >&2
+elif ! gh auth status >/dev/null 2>&1; then
+  echo "aviso: o gh está sem login, a fonte GitHub fica de fora (gh auth login)." >&2
+fi
+
+exec claude "/apontar ${*:-}"

@@ -1,0 +1,11 @@
+{
+  "fonte": "clickup_token.swift",
+  "fonte_sha256": "8eadaa5b726799e69b328f958d01a7e72efb6fd9ca74db19d3dcbd356459ff30",
+  "binario_sha256": "2ab8ac1ba98cb2c950a89d0ac8ab0e475852c83f9717a0298fed1c3cc385c6b3",
+  "alvos": [
+    "arm64-apple-macos12",
+    "x86_64-apple-macos12"
+  ],
+  "compilador": "Apple Swift version 6.4 (swiftlang-6.4.0.34.1 clang-2100.3.34.1)",
+  "gerado_em": "2026-09-30T08:33:21-03:00"
+}
